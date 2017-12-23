@@ -1,7 +1,7 @@
 version: "2"
 services:
   maximal-pool:
-    image: unihalle/maxima-pool
+    image: unihalle/maximapool:stack-2014083000
     restart: always
     environment:
         - MAXIMAPOOL_ADMIN_PASSWORD

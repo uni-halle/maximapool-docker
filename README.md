@@ -25,20 +25,20 @@ STACK-maxima in this image is highly optimized. Before using the pool, one shell
 
 Run `$(grep stackmaximaversion ${ILIAS_PLUGIN_STACK}/classes/stack/maxima/stackmaxima.mac | grep -oP "\d+")` with `${ILIAS_PLUGIN_STACK}` being an absolute or relative path to the assStackQuestion plugin directory.
 
-### Moodle
+### Moodle (moodle-qtype_stack)
 Run `$(grep stackmaximaversion $MOODLE/question/type/stack/stack/maxima/stackmaxima.mac | grep -oP "\d+")` with `$MOODLE` being the root directory of the moodle site on the server.
 
 ## Caveats
 
-* Do not allow direct access from any untrusted users to services/containers created from this image. You may [reverse proxy](#proxy) requests through HTTP (basic) auth.
+* Do not allow direct access from any untrusted users to services/containers created from this image. You may reverse proxy requests through HTTP (basic) auth. Example below.
 * There might be trouble running with containers created from this image when **`aufs`** is docker's [storage driver](https://docs.docker.com/engine/userguide/storagedriver/selectadriver/). You can check with `docker info` for your storage driver in use. For Debian and Ubuntu, as of 2018, we recommend overlay2 instead. 
 
 ## Usage
 
 Create the following files:
 
-`volumes/pool.conf` (Please adjust the values as to meet your requirements.):
-<pre>
+`volumes/pool.conf` (Please adjust the values as to meet your requirements and make sure the file is readeable by everyone [chmod o+r].):
+```
 # Configuration for maxima pool
 # Times in milliseconds
 
@@ -57,35 +57,36 @@ adaptation.averages.length = 5
 
 # Pool size depends on the demand and startuptimes the system tries to maintain the minimum size but as demand may vary one should use a multiplier to play it safe.
 adaptation.safety.multiplier = 3.0
-</pre>
+```
 
 `.env`:
-<pre>
+```
 MAXIMAPOOL_ADMIN_PASSWORD=PUT A STRONG SECRET PASSWORD HERE!
-</pre>
+```
 
 ### Running using Docker only
 
-<pre>
+```
 docker run -d \
    --name TestMaximaPool \
    --env-file .env \
    -p "8765:8080" \
    -v "/path/to/volumes/pool.conf:/opt/maximapool/pool.conf:ro" \
    unihalle/maximapool
-</pre>
+```
 
+You can now visit your pool at http://host:8765/MaximaPool/MaximaPool
 
 ### Running using docker-compose
 
 Minimal example (binds port 8765 to localhost):
 
 `docker-compose.yaml`:
-<pre>
+```
 version: "2"
 services:
   maximal-pool:
-    image: unihalle/maxima-pool
+    image: unihalle/maximapool:stack-2014083000
     restart: always
     environment:
         - MAXIMAPOOL_ADMIN_PASSWORD
@@ -93,16 +94,18 @@ services:
         - "127.0.0.1:8765:8080"
     volumes:
         - "./volumes/pool.conf:/opt/maximapool/pool.conf:ro"
-</pre>
+```
+
+You can now look at your pool at http://127.0.0.1:8765/MaximaPool/MaximaPool
+Inside the docker-compose network, the URL is `http://maximal-pool:8080/MaximaPool/MaximaPool`.
 
 ### Using a proxy with HTTP basic auth and certificates
-<a name="proxy"></a>
 
-This is a complete example illustrating the use with a reverse proxy providing HTTP password authentication and encryption inside a network managed by docker-compose. Pleae replace `$VIRTUAL_HOST` with an actual host name.
+This is a complete example illustrating the use with a reverse proxy providing HTTP password authentication and encryption inside a network managed by docker-compose. Please replace `$VIRTUAL_HOST` with an actual host name.
 
 The disadvantage of HTTP basic auth is that the password is hashed on every request. If you choose more heavy hashing (>8) you are likely to slow down your web proxy.
 
-<pre>
+```
 # Create the pool.conf and .env as described in the minimal examples
 
 # Create an htpasswd file (requires apache-utils installed)
@@ -111,14 +114,14 @@ mkdir -p passwords && htpasswd -cBC 8 passwords/$VIRTUAL_HOST ${USER}
 
 # Add certificates so they can be read by the reverse proxy
 mkdir -p certs && cp VIRTUAL_HOST.crt certs/ && cp VIRTUAL_HOST.key certs/
-</pre>
+```
 
 `docker-compose.yaml`:
-<pre>
+```
 version: "2"
 services:
   maximal-pool:
-    image: unihalle/maxima-pool
+    image: unihalle/maximapool:stack-2014083000
     restart: always
     environment:
         - MAXIMAPOOL_ADMIN_PASSWORD
@@ -139,12 +142,12 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./certs:/etc/nginx/certs:ro
       - ./passwords:/etc/nginx/htpasswd:ro
-</pre>
+```
 
 Finally bring it up and watch the logs:
-<pre>
-docker-compose up -d && docker-compose logs -f
-</pre>
+`docker-compose up -d && docker-compose logs -f`
+
+You can now look at your pool at https://$VIRTUAL_HOST:8765/MaximaPool/MaximaPool after you were prompted for your password if you have configured everything correctly.
 
 Hit `Ctrl`+`C` to quit the logs.
 
