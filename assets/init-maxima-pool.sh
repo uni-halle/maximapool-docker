@@ -53,6 +53,15 @@ if [ "$1" = 'catalina.sh' ]; then
           chown -R   ${RUN_USER}:${RUN_GROUP}  ${CATALINA_HOME}/logs
           chmod      640                       ${CATALINA_HOME}/logs/*
       fi
+
+      cd ${MAXIMAPOOL}/
+      for D in *; do
+          if [ -d "${D}" ] && [ -f "${D}/maximalocal.mac" ]; then
+              mkdir -p "${D}/tmp"
+              chown -R ${RUN_USER}:${RUN_GROUP} "${D}/tmp"
+          fi
+      done
+
       exec gosu "${RUN_USER}:${RUN_GROUP}" "$@"
 fi
 exec "$@"
