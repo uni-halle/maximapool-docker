@@ -1,0 +1,25 @@
+version: "2"
+services:
+  maximal-pool:
+    image: unihalle/maxima-pool
+    restart: always
+    environment:
+        - MAXIMAPOOL_ADMIN_PASSWORD
+        - VIRTUAL_HOST=$VIRTUAL_HOST
+        - VIRTUAL_PORT=8080
+    volumes:
+        - "./volumes/pool.conf:/opt/maximapool/pool.conf:ro"
+        - "/etc/localtime:/etc/localtime:ro"
+  reverse-proxy:
+    image: jwilder/nginx-proxy:alpine
+    environment:
+        - DEFAULT_HOST=$VIRTUAL_HOST
+    ports:
+      - "8065:80"
+      - "8765:443"
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs:ro
+      - ./passwords:/etc/nginx/htpasswd:ro
+

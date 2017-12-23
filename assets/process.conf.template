@@ -1,0 +1,75 @@
+### Config for this Maxima process
+
+# As a sanity check, this must match the name of the containing folder, but not the full path.
+# Typically this is the name of the version number of the current STACK, e.g. 20160922001
+name = ${VER}
+
+# Whether processes of this type should be automatically made available when
+# the server starts.
+auto.start = true
+
+### Maxima related commands and parameters
+
+# Working directory for the process
+working.directory = /tmp
+
+# Command-line to launch the optimised Maxima process.
+# This information is given at the end of the STACK healthcheck script.  It will need to be updated
+# to reflect the move of the optimised image to /var/lib/maxima/%%VERSION%%/
+# This will depend on your maxima (and lisp) setup.  E.g.
+# /usr/lib/clisp-2.49/base/lisp.run -q -M /var/lib/maxima/%%VERSION%%/maxima_opt_auto.mem
+# Do not include the "timeout" command.  The servlet deals with timeouts itself.
+command.line = ${MAXIMAPOOL}/${VER}/maxima-optimised
+#command.line = /usr/bin/maxima
+
+# Input the load command after this, if defined.
+process.started = Maxima restarted
+#process.started = maxima.sourceforge.net
+
+# A file to load to maxima using load(""); set to false or empty if not needed
+extra.file = ${MAXIMAPOOL}/${VER}/maximalocal.mac
+
+# The process has loaded when this appears.
+process.ready = "${MAXIMAPOOL}/${VER}/maximalocal.mac"
+
+
+# Environment variables may be set like this, in most cases you should not need to set them:
+# env.LANG = C
+# env.TERM = xterm
+
+### File handling related parameters
+# these make the difference between shared filesystem installations and truly
+# separate servers
+
+# Do we handle files?
+file.handling = true
+
+# The command template to pass the current working and output directories to the process, use placeholders to mark the paths, depending on your system we may escape \-chars in the path.
+# Usable placeholders:
+#  %WORK-DIR% the directory that won't be transferred to the client side
+#  %WORK-DIR-NE% use this if you do not want \-chars escaped
+#  %OUTPUT-DIR% the directory that will be transferred to the client side
+#  %OUTPUT-DIR-NE% use this if you do not want \-chars escaped
+path.command = maxima_tempdir: "%WORK-DIR%/"$ IMAGE_DIR: "%OUTPUT-DIR%/"$ URL_BASE: "%PLOT-URL-BASE%"$
+
+
+### Maximum lifetimes.
+
+# This is the time that a process is allowed to take when starting up (ms).
+startup.timeout = 10000
+
+# This is the time added to the lifetime of a process when it is taken to use
+# so that it wont be killed while in use (ms).
+execution.timeout = 30000
+
+# This is the lifetime given to a process (ms).
+maximum.lifetime = 600000
+
+
+### Estimates used to start the pool size planning.
+
+# Estimated time to start a process of this type (ms).
+startup.time.estimate = 2000
+
+# Estimated demand for these processes (number per second).
+demand.estimate = 0.1

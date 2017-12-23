@@ -1,0 +1,3 @@
+# Config for maxima pool
+directory.root = ${MAXIMAPOOL}
+admin.password = ${MAXIMAPOOL_ADMIN_PASSWORD}

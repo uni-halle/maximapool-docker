@@ -1,0 +1,154 @@
+# MaximaPool
+
+Docker-ized version of [**MaximaPool**](https://github.com/maths/stack_util_maximapool).
+
+> The MaximaPool creates a pool of maxima processes.
+> This has a number of advantages on large production sites,
+> including the ability to put maxima processes on a
+> separate server, or servers.
+> Also, pooling helps starting up maxima processes so that
+> STACK does not need to wait for them, this may save over
+> 250ms each time you have to call maxima.
+
+STACK-maxima in this image is highly optimized. Before using the pool, one shell call to Maxima took around 4s, now it's at about 100ms, or 200ms with request overhead.
+
+* Code on [GitHub](https://github.com/uni-halle/maximapool-docker) ([Issues](https://github.com/uni-halle/maximapool-docker/issues))
+* Image on [Docker Hub](https://hub.docker.com/r/unihalle/maximapool)
+* Author: Dockerization: Abt. Anwendungssysteme, [ITZ Uni Halle](http://itz.uni-halle.de/); Image includes various open source software.
+  See Dockerfile for details.
+* Support: As a **university** or **research facility** you might be successful in requesting support through the **[ITZ Helpdesk](mailto:helpdesk@itz.uni-halle.de)** (this can take some time) or contacting the author directly. For **any other entity**, including **companies**, see [my home page](https://wohlpa.de/) for contact details and pricing. You may request hosting, support or customizations.
+  *Reporting issues and creating pull requests is always welcome and appreciated.*
+
+## Which version/ tag?
+
+### ILIAS (assStackQuestion)
+
+Run `$(grep stackmaximaversion ${ILIAS_PLUGIN_STACK}/classes/stack/maxima/stackmaxima.mac | grep -oP "\d+")` with `${ILIAS_PLUGIN_STACK}` being an absolute or relative path to the assStackQuestion plugin directory.
+
+### Moodle
+Run `$(grep stackmaximaversion $MOODLE/question/type/stack/stack/maxima/stackmaxima.mac | grep -oP "\d+")` with `$MOODLE` being the root directory of the moodle site on the server.
+
+## Caveats
+
+* Do not allow direct access from any untrusted users to services/containers created from this image. You may [reverse proxy](#proxy) requests through HTTP (basic) auth.
+* There might be trouble running with containers created from this image when **`aufs`** is docker's [storage driver](https://docs.docker.com/engine/userguide/storagedriver/selectadriver/). You can check with `docker info` for your storage driver in use. For Debian and Ubuntu, as of 2018, we recommend overlay2 instead. 
+
+## Usage
+
+Create the following files:
+
+`volumes/pool.conf` (Please adjust the values as to meet your requirements.):
+<pre>
+# Configuration for maxima pool
+# Times in milliseconds
+
+# Size limits
+size.min = 5
+size.max = 15
+
+# This is the limit of simultaneously starting processes this combined to the update frequency defines the maximum load
+start.limit = 4
+
+# Pool update cycle (ms between updates)
+update.cycle = 500
+
+# How big a data-set should be kept for estimates, do not make this too big if the usage is not nearly constant.
+adaptation.averages.length = 5
+
+# Pool size depends on the demand and startuptimes the system tries to maintain the minimum size but as demand may vary one should use a multiplier to play it safe.
+adaptation.safety.multiplier = 3.0
+</pre>
+
+`.env`:
+<pre>
+MAXIMAPOOL_ADMIN_PASSWORD=PUT A STRONG SECRET PASSWORD HERE!
+</pre>
+
+### Running using Docker only
+
+<pre>
+docker run -d \
+   --name TestMaximaPool \
+   --env-file .env \
+   -p "8765:8080" \
+   -v "/path/to/volumes/pool.conf:/opt/maximapool/pool.conf:ro" \
+   unihalle/maximapool
+</pre>
+
+
+### Running using docker-compose
+
+Minimal example (binds port 8765 to localhost):
+
+`docker-compose.yaml`:
+<pre>
+version: "2"
+services:
+  maximal-pool:
+    image: unihalle/maxima-pool
+    restart: always
+    environment:
+        - MAXIMAPOOL_ADMIN_PASSWORD
+    ports:
+        - "127.0.0.1:8765:8080"
+    volumes:
+        - "./volumes/pool.conf:/opt/maximapool/pool.conf:ro"
+</pre>
+
+### Using a proxy with HTTP basic auth and certificates
+<a name="proxy"></a>
+
+This is a complete example illustrating the use with a reverse proxy providing HTTP password authentication and encryption inside a network managed by docker-compose. Pleae replace `$VIRTUAL_HOST` with an actual host name.
+
+The disadvantage of HTTP basic auth is that the password is hashed on every request. If you choose more heavy hashing (>8) you are likely to slow down your web proxy.
+
+<pre>
+# Create the pool.conf and .env as described in the minimal examples
+
+# Create an htpasswd file (requires apache-utils installed)
+mkdir -p passwords && htpasswd -cBC 8 passwords/$VIRTUAL_HOST ${USER}
+# Alternatively use: docker run --rm httpd htpasswd -nbB ${USER} ${PASSWORD} > passwords/$VIRTUAL_HOST
+
+# Add certificates so they can be read by the reverse proxy
+mkdir -p certs && cp VIRTUAL_HOST.crt certs/ && cp VIRTUAL_HOST.key certs/
+</pre>
+
+`docker-compose.yaml`:
+<pre>
+version: "2"
+services:
+  maximal-pool:
+    image: unihalle/maxima-pool
+    restart: always
+    environment:
+        - MAXIMAPOOL_ADMIN_PASSWORD
+        - VIRTUAL_HOST=$VIRTUAL_HOST
+        - VIRTUAL_PORT=8080
+    volumes:
+        - "./volumes/pool.conf:/opt/maximapool/pool.conf:ro"
+        - "/etc/localtime:/etc/localtime:ro"
+  reverse-proxy:
+    image: jwilder/nginx-proxy:alpine
+    environment:
+        - DEFAULT_HOST=$VIRTUAL_HOST
+    ports:
+      - "8065:80"
+      - "8765:443"
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs:ro
+      - ./passwords:/etc/nginx/htpasswd:ro
+</pre>
+
+Finally bring it up and watch the logs:
+<pre>
+docker-compose up -d && docker-compose logs -f
+</pre>
+
+Hit `Ctrl`+`C` to quit the logs.
+
+### Multiple/ Custom STACK versions
+
+It is possible running this container with multiple versions of STACK or having multiple pools: Mount a volume with proper contents and permissions to `/opt/maximapool/%%VERSION%%/`. You might use the container itself to generate your custom STACK-maxima pool. Toolchain, lisp and maxima are already installed.
+
