@@ -155,3 +155,7 @@ Hit `Ctrl`+`C` to quit the logs.
 
 It is possible running this container with multiple versions of STACK or having multiple pools: Mount a volume with proper contents and permissions to `/opt/maximapool/%%VERSION%%/`. You might use the container itself to generate your custom STACK-maxima pool. Toolchain, lisp and maxima are already installed.
 
+## Contributing
+
+* Advice on [writing docker files](https://developers.redhat.com/blog/2016/02/24/10-things-to-avoid-in-docker-containers/).
+

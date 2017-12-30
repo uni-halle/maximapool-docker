@@ -6,7 +6,7 @@ ARG BUILD_NO
 
 ENV MAXIMAPOOL=/opt/maximapool \
     TOMCAT=${CATALINA_HOME} \
-    ILIAS_PLUGIN_STACK=/opt/assStackQuestion \
+    STACK_MAXIMA=/opt/maxima \
     RUN_USER=tomcat \
     RUN_GROUP=tomcat
 
@@ -68,26 +68,20 @@ RUN apt-get update \
 RUN groupadd -r ${RUN_GROUP} && useradd -g ${RUN_GROUP} -d ${CATALINA_HOME} -s /bin/bash ${RUN_USER}
 
 # Add pool source code and configuration assets
-COPY assets/stack_util_maximapool assets/optimize.mac assets/servlet.conf.template assets/process.conf.template assets/maximalocal.mac.template ${MAXIMAPOOL}/
+COPY assets/init-maxima-pool.sh assets/stack_util_maximapool assets/optimize.mac assets/servlet.conf.template assets/process.conf.template assets/maximalocal.mac.template ${MAXIMAPOOL}/
 # Add STACK from the StackQuestion (unfortunately upstream has not separated the repo into submodules)
-COPY assets/assStackQuestion ${ILIAS_PLUGIN_STACK}
-# The entrypoint script
-COPY assets/init-maxima-pool.sh /
+COPY assets/assStackQuestion/classes/stack/maxima ${STACK_MAXIMA}
 
-ENTRYPOINT ["tini", "--", "/init-maxima-pool.sh"]
-
-# Extract STACK-Version
-RUN VER=$(grep stackmaximaversion ${ILIAS_PLUGIN_STACK}/classes/stack/maxima/stackmaxima.mac | grep -oP "\d+") \
+RUN VER=$(grep stackmaximaversion ${STACK_MAXIMA}/stackmaxima.mac | grep -oP "\d+") \
+    && mv ${MAXIMAPOOL}/init-maxima-pool.sh / \
+    && chmod +x /init-maxima-pool.sh \
     && mkdir -p ${MAXIMAPOOL}/${VER} \
+    && mv ${STACK_MAXIMA} ${MAXIMAPOOL}/${VER}/maxima \
     && mkdir -p ${MAXIMAPOOL}/${VER}/tmp/plots/ \
     && mkdir -p ${MAXIMAPOOL}/${VER}/tmp/logs/ \
-    && cp -R ${ILIAS_PLUGIN_STACK}/classes/stack/maxima ${MAXIMAPOOL}/${VER}
-
-# Finish up, test build
-RUN cd ${MAXIMAPOOL}/ \
+    && cd ${MAXIMAPOOL}/ \
     && echo "Configuring Maxima for STACK" \
-    && VER=$(grep stackmaximaversion ${ILIAS_PLUGIN_STACK}/classes/stack/maxima/stackmaxima.mac | grep -oP '\d+') \
-       sh -c 'envsubst < servlet.conf.template > servlet.conf \
+       && VER=$VER sh -c 'envsubst < servlet.conf.template > servlet.conf \
        && envsubst < process.conf.template > ${VER}/process.conf \
        && envsubst < maximalocal.mac.template > ${VER}/maximalocal.mac \
        && echo "Successfully configured Maxima for STACK ${VER}" \
@@ -96,10 +90,10 @@ RUN cd ${MAXIMAPOOL}/ \
        && cd ${MAXIMAPOOL}/${VER} \
        && maxima -b optimize.mac \
        && echo "Successfully optimized Maxima. Building the web application archive (war)."' \
-       && cd ${MAXIMAPOOL} \
-       && ant \
-       && rm MaximaPool.war \
-       && chmod +x /init-maxima-pool.sh
+    && cd ${MAXIMAPOOL} \
+    && ant \
+    && rm MaximaPool.war
 
+ENTRYPOINT ["tini", "--", "/init-maxima-pool.sh"]
 CMD ["catalina.sh", "run"]
 
