@@ -34,7 +34,7 @@ done
 # 4. Remove package, which are no longer required
 RUN apt-get update \
     && apt-get install -y \
-      openjdk-8-jdk \
+      openjdk-${JAVA_VERSION%%[!0-9]*}-jdk \
       ant \
       wget \
       gnuplot \
