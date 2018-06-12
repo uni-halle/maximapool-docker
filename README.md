@@ -21,6 +21,14 @@ STACK-maxima in this image is highly optimized. Before using the pool, one shell
 
 ## Which version/ tag?
 
+There are multiple versions/ tags available under [dockerhub:unihalle/maximapool/tags/](https://hub.docker.com/r/unihalle/maximapool/tags/).
+
+| Tag                | STACK version | OS/Tomcat/JRE   | Maxima version | assStackQuestion | ILIAS |
+|:------------------ | -------------:| --------------- | --------------:| ----------------:| ----- |
+| `latest`           | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |
+| `stack-2017121800` | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |
+| `stack-2014083000` | 2014083000    | debian sid/9/9  | 5.41.0-Linux   | c23c787 / 9a42ef8 [with patch](https://github.com/ilifau/assStackQuestion/issues/32) | 5.0-5.1 / 5.2 |
+
 ### ILIAS (assStackQuestion)
 
 Run `$(grep stackmaximaversion ${ILIAS_PLUGIN_STACK}/classes/stack/maxima/stackmaxima.mac | grep -oP "\d+")` with `${ILIAS_PLUGIN_STACK}` being an absolute or relative path to the assStackQuestion plugin directory.
@@ -86,7 +94,7 @@ Minimal example (binds port 8765 to localhost):
 version: "2"
 services:
   maximal-pool:
-    image: unihalle/maximapool:stack-2014083000
+    image: unihalle/maximapool:stack-2017121800
     restart: always
     environment:
         - MAXIMAPOOL_ADMIN_PASSWORD
@@ -121,7 +129,7 @@ mkdir -p certs && cp VIRTUAL_HOST.crt certs/ && cp VIRTUAL_HOST.key certs/
 version: "2"
 services:
   maximal-pool:
-    image: unihalle/maximapool:stack-2014083000
+    image: unihalle/maximapool:stack-2017121800
     restart: always
     environment:
         - MAXIMAPOOL_ADMIN_PASSWORD
