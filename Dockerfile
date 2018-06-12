@@ -1,4 +1,4 @@
-FROM tomcat:9
+FROM tomcat:9-jre10
 LABEL maintainer="O: University of Halle (Saale) Germany; OU: ITZ, department application systems" \
       license="Docker composition: MIT; Components: Please check"
 
@@ -17,6 +17,8 @@ RUN set -ex \
     6380DC428747F6C393FEACA59A84159D7001A4E5 \
   ; do \
     gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
+    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
+    gpg --keyserver keyserver.ubuntu.com --recv-keys "$key" || \
     gpg --keyserver keyserver.pgp.com --recv-keys "$key" || \
     gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" ; \
 done
