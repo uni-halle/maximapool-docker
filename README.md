@@ -166,4 +166,9 @@ It is possible running this container with multiple versions of STACK or having 
 ## Contributing
 
 * Advice on [writing docker files](https://developers.redhat.com/blog/2016/02/24/10-things-to-avoid-in-docker-containers/).
+* Releasing a new version:
+    1. Release it to a new branch.
+    2. Update this README.md's compatibility matrix.
+    3. Generate a new `/data_dir/xqcas/stack/maximalocal.mac` through plugin update and re-configuration.
+    4. Update assets/maximalocal.mac.template with generated values from `/data_dir/xqcas/stack/maximalocal.mac`.
 
