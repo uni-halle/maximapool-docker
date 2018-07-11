@@ -23,11 +23,11 @@ STACK-maxima in this image is highly optimized. Before using the pool, one shell
 
 There are multiple versions/ tags available under [dockerhub:unihalle/maximapool/tags/](https://hub.docker.com/r/unihalle/maximapool/tags/).
 
-| Tag                | STACK version | OS/Tomcat/JRE   | Maxima version | assStackQuestion | ILIAS |
-|:------------------ | -------------:| --------------- | --------------:| ----------------:| ----- |
-| `latest`           | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |
-| `stack-2017121800` | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |
-| `stack-2014083000` | 2014083000    | debian sid/9/9  | 5.41.0-Linux   | c23c787 / 9a42ef8 [with patch](https://github.com/ilifau/assStackQuestion/issues/32) | 5.0-5.1 / 5.2 |
+| Tag                | STACK version | OS/Tomcat/JRE   | Maxima version | assStackQuestion | ILIAS | moodle-qtype_stack |
+|:------------------ | -------------:| --------------- | --------------:| ----------------:| ----- | ------------------ |
+| `latest`           | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |4.1
+| `stack-2017121800` | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |4.1
+| `stack-2014083000` | 2014083000    | debian sid/9/9  | 5.41.0-Linux   | c23c787 / 9a42ef8 [with patch](https://github.com/ilifau/assStackQuestion/issues/32) | 5.0-5.1 / 5.2 |3.3
 
 ### ILIAS (assStackQuestion)
 
