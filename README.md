@@ -184,4 +184,4 @@ On the Moodle side, STACK configuration is located at Site Administration -> Plu
     1. Release it to a new branch.
     2. Update this README.md's compatibility matrix.
     3. Generate a new `/data_dir/xqcas/stack/maximalocal.mac` through plugin update and re-configuration.
-    4. Update assets/maximalocal.mac.template with generated values from `/data_dir/xqcas/stack/maximalocal.mac`.
+    4. Update assets/maximalocal.mac.template and assets/optimize.mac with generated values from `/data_dir/xqcas/stack/maximalocal.mac` [ILIAS] or `$MOODLEDATA/stack/**/maximalocal.mac` [Moodle].
