@@ -23,17 +23,20 @@ STACK-maxima in this image is highly optimized. Before using the pool, one shell
 
 There are multiple versions/ tags available under [dockerhub:unihalle/maximapool/tags/](https://hub.docker.com/r/unihalle/maximapool/tags/).
 
-| Tag                | STACK version | OS/Tomcat/JRE   | Maxima version | assStackQuestion | ILIAS |
-|:------------------ | -------------:| --------------- | --------------:| ----------------:| ----- |
-| `latest`           | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |
-| `stack-2017121800` | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |
-| `stack-2014083000` | 2014083000    | debian sid/9/9  | 5.41.0-Linux   | c23c787 / 9a42ef8 [with patch](https://github.com/ilifau/assStackQuestion/issues/32) | 5.0-5.1 / 5.2 |
+| Tag                | STACK version | OS/Tomcat/JRE   | Maxima version | assStackQuestion | ILIAS | moodle-qtype_stack |
+|:------------------ | -------------:| --------------- | --------------:| ----------------:| ----- | ------------------ |
+| `latest`           | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |4.1
+| `stack-2017121800` | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |4.1
+| `stack-2014083000` | 2014083000    | debian sid/9/9  | 5.41.0-Linux   | c23c787 / 9a42ef8 [with patch](https://github.com/ilifau/assStackQuestion/issues/32) | 5.0-5.1 / 5.2 |3.3
 
-### ILIAS (assStackQuestion)
+### Identifying required version
+
+**ILIAS (assStackQuestion)**
 
 Run `$(grep stackmaximaversion ${ILIAS_PLUGIN_STACK}/classes/stack/maxima/stackmaxima.mac | grep -oP "\d+")` with `${ILIAS_PLUGIN_STACK}` being an absolute or relative path to the assStackQuestion plugin directory.
 
-### Moodle (moodle-qtype_stack)
+**Moodle (moodle-qtype_stack)**
+
 Run `$(grep stackmaximaversion $MOODLE/question/type/stack/stack/maxima/stackmaxima.mac | grep -oP "\d+")` with `$MOODLE` being the root directory of the moodle site on the server.
 
 ## Caveats
@@ -163,6 +166,17 @@ Hit `Ctrl`+`C` to quit the logs.
 
 It is possible running this container with multiple versions of STACK or having multiple pools: Mount a volume with proper contents and permissions to `/opt/maximapool/%%VERSION%%/`. You might use the container itself to generate your custom STACK-maxima pool. Toolchain, lisp and maxima are already installed.
 
+It is also possible to build image for use with specific version of Moodle [Question Type STACK plugin](https://github.com/maths/moodle-qtype_stack). Make sure that `assets/moodle-qtype_stack` submodule is tracking commit that is matching the version of `qtype_stack` plugin you have installed in Moodle, then build the image with `--build-arg BUILD_FOR_MOODLE=1` parameter.
+
+## Using with Moodle
+
+On the Moodle side, STACK configuration is located at Site Administration -> Plugins -> Question Type -> STACK plugin settings. To make it worh with MaximaPool Docker container, you need to set:
+* Platform type: Server
+* Maxima version: choose one matching the image in use (e.g. 5.41.0)
+* Maxima command: `maxima-pool:8080/MaximaPool/MaximaPool`
+
+`maxima-pool` is the hostname of Maxima container, it should be accessible by Moodle webserver.
+
 ## Contributing
 
 * Advice on [writing docker files](https://developers.redhat.com/blog/2016/02/24/10-things-to-avoid-in-docker-containers/).
@@ -171,4 +185,3 @@ It is possible running this container with multiple versions of STACK or having 
     2. Update this README.md's compatibility matrix.
     3. Generate a new `/data_dir/xqcas/stack/maximalocal.mac` through plugin update and re-configuration.
     4. Update assets/maximalocal.mac.template with generated values from `/data_dir/xqcas/stack/maximalocal.mac`.
-

@@ -3,12 +3,18 @@ LABEL maintainer="O: University of Halle (Saale) Germany; OU: ITZ, department ap
       license="Docker composition: MIT; Components: Please check"
 
 ARG BUILD_NO
+ARG BUILD_FOR_MOODLE
 
 ENV MAXIMAPOOL=/opt/maximapool \
     TOMCAT=${CATALINA_HOME} \
     STACK_MAXIMA=/opt/maxima \
     RUN_USER=tomcat \
     RUN_GROUP=tomcat
+
+# If BUILD_FOR_MOODLE buid-time argument provided, use STACK maxima from moodle-qtype_stack repo
+# otherwise, use STACK maxima from StackQuestion.
+ENV MAXIMA_LOCAL_PATH=${BUILD_FOR_MOODLE:+moodle-qtype_stack/stack/maxima}
+ENV MAXIMA_LOCAL_PATH=${MAXIMA_LOCAL_PATH:-assStackQuestion/classes/stack/maxima}
 
 # Fetch some GPG keys we need to verify downloads
 RUN set -ex \
@@ -71,8 +77,8 @@ RUN groupadd -r ${RUN_GROUP} && useradd -g ${RUN_GROUP} -d ${CATALINA_HOME} -s /
 
 # Add pool source code and configuration assets
 COPY assets/init-maxima-pool.sh assets/stack_util_maximapool assets/optimize.mac assets/servlet.conf.template assets/process.conf.template assets/maximalocal.mac.template ${MAXIMAPOOL}/
-# Add STACK from the StackQuestion (unfortunately upstream has not separated the repo into submodules)
-COPY assets/assStackQuestion/classes/stack/maxima ${STACK_MAXIMA}
+# Add STACK maxima.
+COPY assets/${MAXIMA_LOCAL_PATH} ${STACK_MAXIMA}
 
 RUN VER=$(grep stackmaximaversion ${STACK_MAXIMA}/stackmaxima.mac | grep -oP "\d+") \
     && mv ${MAXIMAPOOL}/init-maxima-pool.sh / \
