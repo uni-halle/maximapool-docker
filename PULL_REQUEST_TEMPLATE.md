@@ -1,6 +1,6 @@
-**Describe your changes to whom it might be helpful**
+**Describe your changes and to whom it might be helpful**
 
-If the change addresses an existing issue, address it by mentioning it (#issuenumber).
+If the change addresses an existing issue, mention it (#issuenumber).
 
 **Checklist**
 - [ ] [Applied best practice writing docker files](https://developers.redhat.com/blog/2016/02/24/10-things-to-avoid-in-docker-containers/)
