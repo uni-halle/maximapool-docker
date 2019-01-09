@@ -3,7 +3,7 @@ LABEL maintainer="O: University of Halle (Saale) Germany; OU: ITZ, department ap
       license="Docker composition: MIT; Components: Please check"
 
 ARG BUILD_NO
-ARG BUILD_FOR_MOODLE
+ARG BUILD_FOR_MOODLE=true
 
 ENV MAXIMAPOOL=/opt/maximapool \
     TOMCAT=${CATALINA_HOME} \
@@ -41,8 +41,30 @@ done
 #
 # 4. Remove package, which are no longer required
 RUN apt-get update \
+    && JV=${JAVA_VERSION%%[!0-9]*} \
+    && if [ $JV -lt 9 ]; then \
+        apt-get install -y openjdk-${JV}-jdk; \
+      else \
+         if [ $JV -eq 10 ]; then \
+           JDK_URL=https://download.java.net/java/GA/jdk10/10.0.2/19aef61b38124481863b1413dce1855f/13/openjdk-10.0.2_linux-x64_bin.tar.gz; \
+           JDK_HOME=/usr/lib/jvm/java-10-openjdk-amd64; \
+         fi; \
+         if [ $JV -eq 11 ]; then \
+           JDK_URL=https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz; \
+           JDK_HOME=/usr/lib/jvm/java-11-openjdk-amd64; \
+         fi; \
+	 echo $JDK_URL; \
+         echo $JDK_HOME; \
+         wget -O jdk.tar.gz ${JDK_URL}; \
+         tar -xzf jdk.tar.gz; \
+	 rm jdk.tar.gz; \
+         mv jdk-${JAVA_VERSION} ${JDK_HOME}; \
+	 update-alternatives --install /usr/bin/java java ${JDK_HOME}/jdk-${JAVA_VERSION}/bin/java 1; \
+	 update-alternatives --set java ${JDK_HOME}/jdk-${JAVA_VERSION}/bin/java; \
+	 update-alternatives --install /usr/bin/javac javac ${JDK_HOME}/jdk-${JAVA_VERSION}/bin/javac 1; \
+	 update-alternatives --set javac ${JDK_HOME}/jdk-${JAVA_VERSION}/bin/javac; \
+      fi \
     && apt-get install -y \
-      openjdk-${JAVA_VERSION%%[!0-9]*}-jdk \
       ant \
       wget \
       gnuplot \
