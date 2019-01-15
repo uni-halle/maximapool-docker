@@ -3,7 +3,7 @@ LABEL maintainer="O: University of Halle (Saale) Germany; OU: ITZ, department ap
       license="Docker composition: MIT; Components: Please check"
 
 ARG BUILD_NO
-ARG BUILD_FOR_MOODLE
+ARG BUILD_FOR_MOODLE=true
 
 ENV MAXIMAPOOL=/opt/maximapool \
     TOMCAT=${CATALINA_HOME} \
