@@ -22,11 +22,11 @@ RUN set -ex \
     B42F6819007F00F88E364FD4036A9C25BF357DD4 \
     6380DC428747F6C393FEACA59A84159D7001A4E5 \
   ; do \
-    gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
-    gpg --keyserver keyserver.ubuntu.com --recv-keys "$key" || \
-    gpg --keyserver keyserver.pgp.com --recv-keys "$key" || \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" ; \
+    gpg --batch --keyserver pgp.mit.edu --recv-keys "$key" || \
+    gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
+    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key" || \
+    gpg --batch --keyserver keyserver.pgp.com --recv-keys "$key" || \
+    gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" ; \
 done
 
 # 1. Update the image and install packages required
@@ -59,14 +59,14 @@ RUN apt-get update \
     && rm maxima-common_5.41.0-6_all.deb maxima-sbcl_5.41.0-6_amd64.deb \
     && cd ${CATALINA_HOME}/webapps \
     && rm -r docs/ examples/ host-manager/ manager/ \
-    && curl -o /usr/local/bin/gosu -fSL "https://github.com/tianon/gosu/releases/download/1.7/gosu-$(dpkg --print-architecture)" \
-    && curl -o /usr/local/bin/gosu.asc -fSL "https://github.com/tianon/gosu/releases/download/1.7/gosu-$(dpkg --print-architecture).asc" \
-    && gpg --verify /usr/local/bin/gosu.asc \
+    && curl -o /usr/local/bin/gosu -fSL "https://github.com/tianon/gosu/releases/download/1.11/gosu-$(dpkg --print-architecture)" \
+    && curl -o /usr/local/bin/gosu.asc -fSL "https://github.com/tianon/gosu/releases/download/1.11/gosu-$(dpkg --print-architecture).asc" \
+    && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
     && rm /usr/local/bin/gosu.asc \
     && chmod +x /usr/local/bin/gosu \
-    && curl -o /usr/local/bin/tini -fSL "https://github.com/krallin/tini/releases/download/v0.9.0/tini" \
-    && curl -o /usr/local/bin/tini.asc -fSL "https://github.com/krallin/tini/releases/download/v0.9.0/tini.asc" \
-    && gpg --verify /usr/local/bin/tini.asc \
+    && curl -o /usr/local/bin/tini -fSL "https://github.com/krallin/tini/releases/download/v0.18.0/tini" \
+    && curl -o /usr/local/bin/tini.asc -fSL "https://github.com/krallin/tini/releases/download/v0.18.0/tini.asc" \
+    && gpg --batch --verify /usr/local/bin/tini.asc /usr/local/bin/tini \
     && rm /usr/local/bin/tini.asc \
     && chmod +x /usr/local/bin/tini \
     && apt-get purge -y --auto-remove wget curl \
