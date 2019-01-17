@@ -69,18 +69,19 @@ RUN apt-get update \
     && gpg --batch --verify /usr/local/bin/tini.asc /usr/local/bin/tini \
     && rm /usr/local/bin/tini.asc \
     && chmod +x /usr/local/bin/tini \
-    && apt-get purge -y --auto-remove wget curl \
+    && apt-get purge -y --auto-remove wget \
     && rm -r /var/lib/apt/lists/*
 
 # Add a tomcat user
 RUN groupadd -r ${RUN_GROUP} && useradd -g ${RUN_GROUP} -d ${CATALINA_HOME} -s /bin/bash ${RUN_USER}
 
 # Add pool source code and configuration assets
-COPY assets/init-maxima-pool.sh assets/stack_util_maximapool assets/optimize.mac assets/servlet.conf.template assets/process.conf.template assets/maximalocal.mac.template ${MAXIMAPOOL}/
+COPY assets/init-maxima-pool.sh assets/docker-healthcheck.sh assets/stack_util_maximapool assets/optimize.mac assets/servlet.conf.template assets/process.conf.template assets/maximalocal.mac.template ${MAXIMAPOOL}/
 # Add STACK maxima.
 COPY assets/${MAXIMA_LOCAL_PATH} ${STACK_MAXIMA}
 
 RUN VER=$(grep stackmaximaversion ${STACK_MAXIMA}/stackmaxima.mac | grep -oP "\d+") \
+    && echo "${VER}" >> ${MAXIMAPOOL}/stack-version \
     && mv ${MAXIMAPOOL}/init-maxima-pool.sh / \
     && chmod +x /init-maxima-pool.sh \
     && mkdir -p ${MAXIMAPOOL}/${VER} \
@@ -102,6 +103,7 @@ RUN VER=$(grep stackmaximaversion ${STACK_MAXIMA}/stackmaxima.mac | grep -oP "\d
     && ant \
     && rm MaximaPool.war
 
+HEALTHCHECK --interval=10s --timeout=9s --start-period=15s CMD ${MAXIMAPOOL}/docker-healthcheck.sh
 ENTRYPOINT ["tini", "--", "/init-maxima-pool.sh"]
 CMD ["catalina.sh", "run"]
 

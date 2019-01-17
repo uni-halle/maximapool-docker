@@ -1,7 +1,7 @@
 version: "2"
 services:
-  maximal-pool:
-    image: unihalle/maximapool:stack-2017121800
+  maxima-pool:
+    image: unihalle/maximapool:stack-2018030500
     build: .
     restart: always
     environment:
@@ -11,6 +11,8 @@ services:
     volumes:
         - "./volumes/pool.conf:/opt/maximapool/pool.conf:ro"
         - "/etc/localtime:/etc/localtime:ro"
+    ports:
+      - "127.0.0.1:8085:8080"
   reverse-proxy:
     image: jwilder/nginx-proxy:alpine
     environment:
