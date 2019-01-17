@@ -186,3 +186,38 @@ On the Moodle side, STACK configuration is located at Site Administration -> Plu
     2. Update this README.md's compatibility matrix.
     3. Generate a new `/data_dir/xqcas/stack/maximalocal.mac` through plugin update and re-configuration.
     4. Update assets/maximalocal.mac.template and assets/optimize.mac with generated values from `/data_dir/xqcas/stack/maximalocal.mac` [ILIAS] or `$MOODLEDATA/stack/**/maximalocal.mac` [Moodle].
+
+## For developers: Locating, tracking and amending versions
+
+### Locate stackmaxima
+- Moodle [stackmaxima.mac](https://github.com/maths/moodle-qtype_stack/blob/master/stack/maxima/stackmaxima.mac): Last line
+- ILIAS [stackmaxima.mac](https://github.com/ilifau/assStackQuestion/blob/master/classes/stack/maxima/stackmaxima.mac): Last line
+
+### Change stackmaxima
+- Moodle: `cd assets/moodle-qtype_stack && git checkout [ref] && cd ../.. && git add assets/moodle-qtype_stack && git commit -m "Update to STACK [stackversion]"`
+   Impacts moodle-qtype_stack [`cd assets/moodle-qtype_stack && git log`]  version.
+- ILIAS: `cd assets/assStackQuestion && git checkout [ref] && cd ../.. && git add assets/assStackQuestion && git commit -m "Update to STACK [stackversion]"`
+  Impacts assStackQuestion [`cd assets/assStackQuestion && git log`] and possibly ILIAS version. assStackQuestion has branches like `master-ilias53`
+
+### Locate OS
+- `docker-compose exec [maximapool] bash -c 'cat /etc/debian_version'`
+- Look up in [Wikipedia](https://en.wikipedia.org/wiki/Debian_version_history)
+- Depends on the base image used for Tomcat/JDK
+
+### Locate and amend Tomcat / JDK version
+- See [Dockerfile](https://github.com/uni-halle/maximapool-docker/blob/develop/Dockerfile) first line.
+
+### Locate and amend Maxima version
+- See [Dockerfile](https://github.com/uni-halle/maximapool-docker/blob/develop/Dockerfile) and grep for "Maxima-Linux".
+
+### Files to monitor for changes
+
+- assets/optimize.mac
+  - Watch for _This variable controls which optional packages are supported by STACK._
+  - Moodle [stack/cas/installhelper.class.php#L32](https://github.com/maths/moodle-qtype_stack/blob/master/stack/cas/installhelper.class.php#L32)
+  - ILIAS [classes/stack/cas/installhelper.class.php#L37](https://github.com/ilifau/assStackQuestion/blob/629f817624b1dfb7cbb74aa0f1135c0ad39c56df/classes/stack/cas/installhelper.class.php#L37)
+  - and ensure all these packages are loaded
+  - it's easier to look into an LMS generated stackmaxima.mac file.
+- assets/maximalocal.mac.template
+  - Moodle [stack/maxima/sandbox.wxm](https://github.com/maths/moodle-qtype_stack/blob/1130d860ebb8e03d78c6c7973ba48c2dfa844685/stack/maxima/sandbox.wxm) - only as a hint - you should really look into an LMS generated stackmaxima.mac file.
+   - ILIAS [classes/stack/maxima/sandbox.wxm](https://github.com/ilifau/assStackQuestion/blob/629f817624b1dfb7cbb74aa0f1135c0ad39c56df/classes/stack/maxima/sandbox.wxm) - only as a hint - you should really look into an LMS generated stackmaxima.mac file.
