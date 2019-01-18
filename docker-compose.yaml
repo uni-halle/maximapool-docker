@@ -10,6 +10,7 @@ services:
         - VIRTUAL_PORT=8080
     volumes:
         - "./volumes/pool.conf:/opt/maximapool/pool.conf:ro"
+        - "./volumes/logs/tomcat:/usr/local/tomcat/logs"
         - "/etc/localtime:/etc/localtime:ro"
     ports:
       - "127.0.0.1:8085:8080"

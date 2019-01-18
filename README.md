@@ -133,7 +133,7 @@ mkdir -p certs && cp VIRTUAL_HOST.crt certs/ && cp VIRTUAL_HOST.key certs/
 version: "2"
 services:
   maximal-pool:
-    image: unihalle/maximapool:stack-2017121800
+    image: unihalle/maximapool:stack-2018030500
     restart: always
     environment:
         - MAXIMAPOOL_ADMIN_PASSWORD
@@ -141,6 +141,7 @@ services:
         - VIRTUAL_PORT=8080
     volumes:
         - "./volumes/pool.conf:/opt/maximapool/pool.conf:ro"
+        - "./volumes/logs/tomcat:/usr/local/tomcat/logs"
         - "/etc/localtime:/etc/localtime:ro"
   reverse-proxy:
     image: jwilder/nginx-proxy:alpine
@@ -161,7 +162,7 @@ Finally bring it up and watch the logs:
 
 You can now look at your pool at https://$VIRTUAL_HOST:8765/MaximaPool/MaximaPool after you were prompted for your password if you have configured everything correctly.
 
-Hit `Ctrl`+`C` to quit the logs.
+Hit `Ctrl`+`C` to detach from container output (logs). Tomcat's logs will be stored to `./volumes/logs/tomcat`. To control what is logged, override `/usr/local/tomcat/conf/server.xml` [(AccessLogValve)](https://tomcat.apache.org/tomcat-9.0-doc/config/valve.html#Access_Log_Valve) - mount a file or directory to that place, or override using a Dockerfile.
 
 ### Multiple/ Custom STACK versions
 

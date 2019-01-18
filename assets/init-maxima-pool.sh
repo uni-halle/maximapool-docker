@@ -44,7 +44,7 @@ if [ "$1" = 'catalina.sh' ]; then
           && chown -R ${RUN_USER}:${RUN_GROUP} ${CATALINA_HOME}/temp               \
           && chown -R ${RUN_USER}:${RUN_GROUP} ${CATALINA_HOME}/webapps            \
           && chown -R ${RUN_USER}:${RUN_GROUP} ${CATALINA_HOME}/conf               \
-          && chown -R ${RUN_USER}:${RUN_GROUP} ${CATALINA_HOME}/logs
+          && chown -R ${RUN_USER}              ${CATALINA_HOME}/logs
 
       touch ${CATALINA_HOME}/logs/catalina.out
 
