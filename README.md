@@ -25,7 +25,8 @@ There are multiple versions/ tags available under [dockerhub:unihalle/maximapool
 
 | Tag                | STACK version | OS/Tomcat/JRE   | Maxima version | assStackQuestion | ILIAS | moodle-qtype_stack |
 |:------------------ | -------------:| --------------- | --------------:| ----------------:| ----- | ------------------ |
-| `latest`           | 2018030500    | debian sid/9/11 | 5.41.0-Linux   |                  |       |4.1+ [(9bf7a7f)](https://github.com/maths/moodle-qtype_stack/tree/9bf7a7ff6118086480f2b3db5fbb933150c8fa49)
+| `latest`           | 2018080600    | debian sid/9/11 | 5.41.0-Linux   |                  |       |4.2.1 		|
+| `stack-2018080600` | 2018080600    | debian sid/9/11 | 5.41.0-Linux   |                  |       |4.2.1 		|
 | `stack-2018030500` | 2018030500    | debian sid/9/11 | 5.41.0-Linux   |                  |       |4.1+ [(9bf7a7f)](https://github.com/maths/moodle-qtype_stack/tree/9bf7a7ff6118086480f2b3db5fbb933150c8fa49)
 | `stack-2017121800` | 2017121800    | debian sid/9/10 | 5.41.0-Linux   | 12439ff          | 5.3   |4.1
 | `stack-2014083000` | 2014083000    | debian sid/9/9  | 5.41.0-Linux   | c23c787 / 9a42ef8 [with patch](https://github.com/ilifau/assStackQuestion/issues/32) | 5.0-5.1 / 5.2 |3.3
