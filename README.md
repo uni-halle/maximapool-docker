@@ -82,7 +82,7 @@ MAXIMAPOOL_ADMIN_PASSWORD=PUT A STRONG SECRET PASSWORD HERE!
 ```
 docker run -d \
    --name TestMaximaPool \
-   --env-file .env \
+   -e "MAXIMAPOOL_ADMIN_PASSWORD=PUT A STRONG SECRET PASSWORD HERE!" \
    -p "8765:8080" \
    -v "/path/to/volumes/pool.conf:/opt/maximapool/pool.conf:ro" \
    unihalle/maximapool
