@@ -1,8 +1,6 @@
 [submodule "stack_util_maximapool"]
 	path = assets/stack_util_maximapool
-	url = https://github.com/Rillke/stack_util_maximapool.git
-	# currently leaks threads
-	# url = https://github.com/maths/stack_util_maximapool.git
+	url = https://github.com/maths/stack_util_maximapool.git
 [submodule "assStackQuestion"]
 	path = assets/assStackQuestion
 	url = https://github.com/ilifau/assStackQuestion.git
