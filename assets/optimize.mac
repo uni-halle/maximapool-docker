@@ -7,5 +7,6 @@ load("maxima/stackmaxima.mac");
 load(stats);
 load(distrib);
 load(descriptive);
+load(simplex);
 :lisp (sb-ext:save-lisp-and-die "maxima-optimised" :toplevel #'run :executable t)
 
