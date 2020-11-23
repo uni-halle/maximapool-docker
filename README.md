@@ -19,6 +19,10 @@ STACK-maxima in this image is highly optimized. Before using the pool, one shell
 * Support: As a **university** or **research facility** you might be successful in requesting support through the **[ITZ Helpdesk](mailto:helpdesk@itz.uni-halle.de)** (this can take some time) or contacting the author directly. For **any other entity**, including **companies**, see [my home page](https://wohlpa.de/) for contact details and pricing. You may request hosting, support or customizations.
   *Reporting issues and creating pull requests is always welcome and appreciated.*
 
+## The Future
+
+We are likely transitioning to the more efficient [**goemaxima**](https://github.com/mathinstitut/goemaxima) by [GWDG](https://projects.gwdg.de/projects/netzwerk-mathe-digital/wiki/stack-maxima-pool-technical-details). We assume GWDG, as a multi educational institution service provider, will be able to provide long-term support with their permanent employees. This project will then be archived and won't receive further updates.
+
 ## Which version/ tag?
 
 There are multiple versions/ tags available under [dockerhub:unihalle/maximapool/tags/](https://hub.docker.com/r/unihalle/maximapool/tags/).
@@ -227,3 +231,16 @@ On the Moodle side, STACK configuration is located at Site Administration -> Plu
 - assets/maximalocal.mac.template
   - Moodle [stack/maxima/sandbox.wxm](https://github.com/maths/moodle-qtype_stack/blob/1130d860ebb8e03d78c6c7973ba48c2dfa844685/stack/maxima/sandbox.wxm) - only as a hint - you should really look into an LMS generated stackmaxima.mac file.
    - ILIAS [classes/stack/maxima/sandbox.wxm](https://github.com/ilifau/assStackQuestion/blob/629f817624b1dfb7cbb74aa0f1135c0ad39c56df/classes/stack/maxima/sandbox.wxm) - only as a hint - you should really look into an LMS generated stackmaxima.mac file.
+
+## For developers: Build the images
+
+```bash
+git clone --recurse-submodules -j4 git@github.com:uni-halle/maximapool-docker.git # you can omit the -j4 option if this causes issues
+cd maximapool-docker
+docker build . # or docker-compose build; you can ignore the warning about undefined environment variables
+```
+
+## For developers: FAQ
+
+* Q: build.xml does not exist.
+     * A: Please make sure to clone and initialize the submodules as well: `git clone --recurse-submodules -j4 git@github.com:uni-halle/maximapool-docker.git` or, if you already cloned, change directory into the cloned git repo and fetch the submodules `cd maximapool-docker && git submodule update --init --recursive`
